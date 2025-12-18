@@ -24,7 +24,9 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     // Add the gpio module so it can be used by the package manager
-    const gpio_module = b.createModule(.{ .root_source_file = b.path("src/index.zig") });
+    const gpio_module = b.createModule(.{ 
+        .root_source_file = b.path("src/index.zig") 
+    });
     try b.modules.put(b.dupe("gpio"), gpio_module);
 
     // Create a step to build all the examples
@@ -37,9 +39,11 @@ pub fn build(b: *std.Build) !void {
 
         const exe = b.addExecutable(.{
             .name = cfg.name,
-            .root_source_file = b.path(cfg.src),
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(cfg.src),
+                .target = target,
+                .optimize = optimize,
+            }),
         });
         exe.root_module.addImport("gpio", gpio_module);
 
@@ -58,9 +62,11 @@ pub fn build(b: *std.Build) !void {
 
         const exe = b.addExecutable(.{
             .name = cfg.name,
-            .root_source_file = b.path(cfg.src),
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(cfg.src),
+                .target = target,
+                .optimize = optimize,
+            })
         });
         exe.root_module.addImport("gpio", gpio_module);
 
